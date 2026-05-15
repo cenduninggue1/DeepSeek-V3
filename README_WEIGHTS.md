@@ -78,17 +78,6 @@ The FP8 weight file introduces a `quantization_config` field to describe the qua
   - Format type: `fp8` and `e4m3` (corresponding to `torch.float8_e4m3fn`).
   - Weight block size: `128x128`.
 - **Activation Quantization Scheme**:
-  - Utilizes dynamic activation quantization (`dynamic`).
+  - Utilizes dynamic activation quantization.
 
-### Dequantization Method
-
-The FP8 weight file includes a `weight_scale_inv` field, which stores the dequantization scale for each weight block.
-
-- **Storage Format**: `float32 Tensor`, stored alongside the weight data.
-- **Dequantization Formula**:
-  - If the weight block is not aligned to 128, it is zero-padded to 128 before calculating the scale. After quantization, the padded portion is removed.
-  - The dequantization process is performed as: `(128x128 weight block) * weight_scale_inv`.
-
-Through dequantization of the FP8 weights, runtime operations enable online quantization at a granularity of `per-token-per-128-channel`.
-
----
+> **Personal note**: When loading the FP8 weights on a GPU that doesn't natively support FP8 (e.g., older A100s), you'll need to dequantize to BF16 at load time. I found that passing `torch_dtype=torch.bfloat16` to `from_pretrained` handles this automatically with the HuggingFace integration.
