@@ -78,6 +78,8 @@ The FP8 weight file introduces a `quantization_config` field to describe the qua
   - Format type: `fp8` and `e4m3` (corresponding to `torch.float8_e4m3fn`).
   - Weight block size: `128x128`.
 - **Activation Quantization Scheme**:
-  - Utilizes dynamic activation quantization.
+  - Utilizes dynamic activation quantization
 
-> **Personal note**: When loading the FP8 weights on a GPU that doesn't natively support FP8 (e.g., older A100s), you'll need to dequantize to BF16 at load time. I found that passing `torch_dtype=torch.bfloat16` to `from_pretrained` handles this automatically with the HuggingFace integration.
+> **Personal note**: When loading FP8 weights on consumer hardware (e.g., RTX 3090/4090), be aware that
+> `torch.float8_e4m3fn` requires PyTorch >= 2.1. If you hit dtype errors, check your torch version first
+> before debugging the model config. Spent an hour on this — don't make the same mistake.
